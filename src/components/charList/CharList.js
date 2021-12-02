@@ -1,75 +1,41 @@
 import './charList.scss';
 import {Component} from 'react'
-import abyss from '../../resources/img/abyss.jpg';
 import MarvelServices from '../../services/MarvelServices';
+import Spinner from '../spinner/Spinner';
 
 
 class CharList extends Component{
-  constructor(props) {
-    super(props);
-    this.state={
-      data:[]
-    }
-  }
-   componentDidMount() {
-   this.updateChars();
-  
+   constructor(props) {
+     super(props);
+     this.state={
+       data:[],
+       loading:true
+     }
+     
    }
-  updateChars = () => {
-    const id = 1011400;
-    this.marvelService
-      .getCharacter(id)//getCharacter возвращает нужный объект res и мы в then обновляем state
-      // .then(this.onCharLoaded)//Аргумент который в then автоматически удет подставлятся в onCharLoaded
-      // .catch(this.onError)//сработает только если произоша ошибка загрузки данных
+  marvelService = new MarvelServices();
+  componentDidMount() {
+    this.updateChars();
     
-   }
+  }
+  onCharsLoaded=(Chars)=>{
+    this.setState({
+      data:Chars,
+      loading:false
+    })
+    console.log(this.state.data)
+    
+  }
+  updateChars=()=>{
+    
+    this.marvelService.getAllCharacters().then(this.onCharsLoaded);
+  }
   render() {
-    let content = <View />;
-    for (let i = 1; i < 9; i++){
-      content+=<View/>
-    }
+    const content=this.state.loading?<Spinner/>:<Element data={this.state.data} onCharSelected={this.props.onCharSelected} />;
     return (
       
       <div className="char__list">
-        <ul className="char__grid">
-          {content}
-              {/* <li className="char__item">
-                  <img src={abyss} alt="abyss"/>
-                  <div className="char__name">Abyss</div>
-              </li>
-              <li className="char__item char__item_selected">
-                  <img src={abyss} alt="abyss"/>
-                  <div className="char__name">Abyss</div>
-              </li>
-              <li className="char__item">
-                  <img src={abyss} alt="abyss"/>
-                  <div className="char__name">Abyss</div>
-              </li>
-              <li className="char__item">
-                  <img src={abyss} alt="abyss"/>
-                  <div className="char__name">Abyss</div>
-              </li>
-              <li className="char__item">
-                  <img src={abyss} alt="abyss"/>
-                  <div className="char__name">Abyss</div>
-              </li>
-              <li className="char__item">
-                  <img src={abyss} alt="abyss"/>
-                  <div className="char__name">Abyss</div>
-              </li>
-              <li className="char__item">
-                  <img src={abyss} alt="abyss"/>
-                  <div className="char__name">Abyss</div>
-              </li>
-              <li className="char__item">
-                  <img src={abyss} alt="abyss"/>
-                  <div className="char__name">Abyss</div>
-              </li>
-              <li className="char__item">
-                  <img src={abyss} alt="abyss"/>
-                  <div className="char__name">Abyss</div>
-              </li> */}
-          </ul>
+        {content}    
           <button className="button button__main button__long">
               <div className="inner">load more</div>
           </button>
@@ -79,21 +45,34 @@ class CharList extends Component{
    
 }
 
-const View =()=>{
-  
-    // const id = Math.floor(Math.random() * (1011400 - 1011000) + 1011000);
-    // this.marvelService
-    //   .getCharacter(id)//getCharacter возвращает нужный объект res и мы в then обновляем state
-    //   .then(this.onCharLoaded)//Аргумент который в then автоматически удет подставлятся в onCharLoaded
-    //   .catch(this.onError)//сработает только если произоша ошибка загрузки данных
-    return (
-      <li className="char__item">
-            <img src={abyss} alt="abyss"/>
-            <div className="char__name">Abyss</div>
-      </li>
+const Element=({data,onCharSelected})=>{
+  const elements=data.map(item=>{
+    return(
+      <ElementItem
+      key={item.id}
+      {...item}
+      onCharSelected={()=>onCharSelected(item.id)}
+      />
     )
-    
-  
+      
+  })
+  return(
+    <ul className="char__grid">
+        {elements}
+    </ul>
+  )
 }
 
+const ElementItem=(props)=>{
+  const {name,thumbnail,onCharSelected}=props;
+  let CharImg = "char__item__img" ;
+  if (thumbnail==="http://i.annihil.us/u/prod/marvel/i/mg/b/40/image_not_available.jpg") CharImg="char__item__no__img"
+  
+  return(
+    <li onClick={onCharSelected} className="char__item">
+                  <img className={CharImg} src={thumbnail} alt="abyss"/>
+                  <div className="char__name">{name}</div>
+    </li> 
+  )
+}
 export default CharList;

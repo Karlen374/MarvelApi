@@ -22,6 +22,7 @@ class MarvelServices{
   _transformCharacter = (char) => {
     if (char.description.length>120) char.description=char.description.slice(0,120)+'...'
     return {
+        id:char.id,
         name: char.name,
         description: char.description || 'No data yet',
         thumbnail: char.thumbnail.path + '.'+char.thumbnail.extension,
