@@ -19,7 +19,7 @@ class App extends Component {
             <div className="app">
                 <AppHeader/>
                 <main>
-                    <RandomChar/>
+                    <RandomChar onCharSelected={this.onCharSelected}/>
                     <div className="char__content">
                         <CharList onCharSelected={this.onCharSelected}/>
                         <CharInfo charId={this.state.selectedChar}/>
