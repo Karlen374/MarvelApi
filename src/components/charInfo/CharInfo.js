@@ -1,6 +1,6 @@
 import './charInfo.scss';
 import { Component } from 'react';
-import thor from '../../resources/img/thor.jpeg';
+import PropTypes from 'prop-types'
 import Spinner from '../spinner/Spinner';
 import ErrorMessage from '../errorMessage/ErrorMessage';
 import Sceleton from '../skeleton/Skeleton'
@@ -51,7 +51,8 @@ class CharInfo extends Component {
           this.marvelService
                 .getCharacter(charId)
                 .then(this.onCharLoaded)
-                .catch(this.onError)
+          .catch(this.onError)
+        
       }
     render(){
         
@@ -115,5 +116,7 @@ const View=({char})=>{
 }
 
 
-
+CharInfo.propTypes = {
+  charId: PropTypes.number//мы говорим что charId обязательно число
+}
 export default CharInfo;

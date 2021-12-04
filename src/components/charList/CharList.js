@@ -2,41 +2,59 @@ import './charList.scss';
 import {Component} from 'react'
 import MarvelServices from '../../services/MarvelServices';
 import Spinner from '../spinner/Spinner';
-
+import PropTypes from 'prop-types';
 
 class CharList extends Component{
    constructor(props) {
      super(props);
      this.state={
        data:[],
-       loading:true
+       loading: true,
+       newItemLoading: false,
+       offset: 210,
+       charEnded:false
      }
      
    }
   marvelService = new MarvelServices();
   componentDidMount() {
-    this.updateChars();
+    this.onRequest();
     
   }
-  onCharsLoaded=(Chars)=>{
+  onCharListLoading = () => {
     this.setState({
-      data:Chars,
-      loading:false
+      newItemLoading:true
     })
-    console.log(this.state.data)
-    
   }
-  updateChars=()=>{
-    
-    this.marvelService.getAllCharacters().then(this.onCharsLoaded);
+
+  onCharsLoaded = (Chars) => {
+    let ended = false;
+    if (Chars.length < 9) {
+      ended = true;
+    }
+    this.setState(({offset,data,})=>({
+      data: [...data,...Chars],//...data разворачиваем старые элементы ...Chars добавляем новые к старым 
+      loading: false,
+      newItemLoading: false,
+      offset: offset + 9,
+      charEnded: ended
+    }))
   }
+
+  onRequest = (offset) => {
+    this.onCharListLoading();
+    this.marvelService.getAllCharacters(offset).then(this.onCharsLoaded)
+  }
+
+  
   render() {
+    const { offset, newItemLoading ,charEnded} = this.state;
     const content=this.state.loading?<Spinner/>:<Element data={this.state.data} onCharSelected={this.props.onCharSelected} />;
     return (
       
       <div className="char__list">
         {content}    
-          <button className="button button__main button__long">
+        <button onClick={() => this.onRequest(offset)} disabled={newItemLoading} style={{ 'display':charEnded?'none':'block'}} className="button button__main button__long">
               <div className="inner">load more</div>
           </button>
       </div>
@@ -74,5 +92,9 @@ const ElementItem=(props)=>{
                   <div className="char__name">{name}</div>
     </li> 
   )
+}
+
+CharList.propTypes={
+  onCharSelected: PropTypes.func.isRequired
 }
 export default CharList;
