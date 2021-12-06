@@ -12,7 +12,8 @@ class CharList extends Component{
        loading: true,
        newItemLoading: false,
        offset: 210,
-       charEnded:false
+       charEnded: false,
+       selectedId: 0
      }
      
    }
@@ -32,15 +33,22 @@ class CharList extends Component{
     if (Chars.length < 9) {
       ended = true;
     }
-    this.setState(({offset,data,})=>({
+    this.setState(({offset,data})=>({
       data: [...data,...Chars],//...data разворачиваем старые элементы ...Chars добавляем новые к старым 
       loading: false,
       newItemLoading: false,
       offset: offset + 9,
-      charEnded: ended
+      charEnded: ended,
+      
+
     }))
   }
-
+  focusOnItem = (Clickid) => {
+    this.setState({
+      selectedId:Clickid
+    })
+    
+  }
   onRequest = (offset) => {
     this.onCharListLoading();
     this.marvelService.getAllCharacters(offset).then(this.onCharsLoaded)
@@ -49,7 +57,7 @@ class CharList extends Component{
   
   render() {
     const { offset, newItemLoading ,charEnded} = this.state;
-    const content=this.state.loading?<Spinner/>:<Element data={this.state.data} onCharSelected={this.props.onCharSelected} />;
+    const content = this.state.loading ? <Spinner /> : <Element selectedId={this.state.selectedId} data={this.state.data} onCharSelected={this.props.onCharSelected}  focusOnItem={ this.focusOnItem}/>;
     return (
       
       <div className="char__list">
@@ -63,13 +71,18 @@ class CharList extends Component{
    
 }
 
-const Element=({data,onCharSelected})=>{
-  const elements=data.map(item=>{
+const Element = ({selectedId, data, onCharSelected,focusOnItem}) => {
+  
+  const elements = data.map((item) => {
+    const active = (item.id === selectedId);
+    const ourClass=active?'char__item char__item_selected':'char__item'
     return(
       <ElementItem
-      key={item.id}
-      {...item}
-      onCharSelected={()=>onCharSelected(item.id)}
+        key={item.id}
+        {...item}
+        ourClass={ourClass}
+        focusOnItem={()=>focusOnItem(item.id)}
+        onCharSelected={()=>onCharSelected(item.id)}
       />
     )
       
@@ -82,14 +95,19 @@ const Element=({data,onCharSelected})=>{
 }
 
 const ElementItem=(props)=>{
-  const {name,thumbnail,onCharSelected}=props;
+  const { name, thumbnail, onCharSelected,focusOnItem,ourClass} = props;
   let CharImg = "char__item__img" ;
   if (thumbnail==="http://i.annihil.us/u/prod/marvel/i/mg/b/40/image_not_available.jpg") CharImg="char__item__no__img"
   
   return(
-    <li onClick={onCharSelected} className="char__item">
-                  <img className={CharImg} src={thumbnail} alt="abyss"/>
-                  <div className="char__name">{name}</div>
+    <li   tabIndex={0}
+          onClick={() => {
+            onCharSelected();
+            focusOnItem();
+          }}
+          className={ourClass}>
+          <img className={CharImg} src={thumbnail} alt="abyss"/>
+          <div className="char__name">{name}</div>
     </li> 
   )
 }
@@ -97,4 +115,5 @@ const ElementItem=(props)=>{
 CharList.propTypes={
   onCharSelected: PropTypes.func.isRequired
 }
+
 export default CharList;
