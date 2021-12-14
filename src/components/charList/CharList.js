@@ -1,63 +1,61 @@
 import './charList.scss';
-import {Component} from 'react'
+import {useState,useEffect,useRef} from 'react'
 import MarvelServices from '../../services/MarvelServices';
 import Spinner from '../spinner/Spinner';
 import PropTypes from 'prop-types';
 
-class CharList extends Component{
-   constructor(props) {
-     super(props);
-     this.state={
-       data:[],
-       loading: true,
-       newItemLoading: false,
-       offset: 210,
-       charEnded: false,
-       selectedId: 0
-     }
-     
-   }
-  marvelService = new MarvelServices();
-  componentDidMount() {
-    this.onRequest();
-    
-  }
-  onCharListLoading = () => {
-    this.setState({
-      newItemLoading:true
-    })
+const CharList =(props)=>{
+  const [data,setData]=useState([]);
+  const [loading,setLoading]=useState(true);
+  const [newItemLoading,setNewItemLoading]=useState(false);
+  const [offset,setOffset]=useState(210);
+  const [charEnded,setCharEnded]=useState(false);
+  const [selectedId,setSelectedId]=useState(0);
+
+  
+  const marvelService = new MarvelServices();
+
+  useEffect(()=>{
+    onRequest();
+    },[])//выполниться 1 раз тоько при создании 
+
+  
+  const onRequest = (offset) => {
+    onCharListLoading();
+    marvelService.getAllCharacters(offset).then(onCharsLoaded)
   }
 
-  onCharsLoaded = (Chars) => {
+  const onCharListLoading = () => {
+    setNewItemLoading(true);
+  }
+
+ const onCharsLoaded = (Chars) => {
     let ended = false;
     if (Chars.length < 9) {
       ended = true;
     }
-    this.setState(({offset,data})=>({
-      data: [...data,...Chars],//...data разворачиваем старые элементы ...Chars добавляем новые к старым 
-      loading: false,
-      newItemLoading: false,
-      offset: offset + 9,
-      charEnded: ended,
-      
-
-    }))
-  }
-  focusOnItem = (Clickid) => {
-    this.setState({
-      selectedId:Clickid
-    })
+    setData(data=>[...data,...Chars]);
+    setLoading(loading=>false);
+    setNewItemLoading(newItemLoading=>false);
+    setOffset(offset=>offset+9);
+    setCharEnded(charEnded=>ended);
     
   }
-  onRequest = (offset) => {
-    this.onCharListLoading();
-    this.marvelService.getAllCharacters(offset).then(this.onCharsLoaded)
-  }
+  
+  // const itemRefs=useRef([]);
+
+  // const focusOnItem = (Clickid) => {
+    
+  //   itemRefs.current.forEach(item=>item.classList.remove('char__item_selected');
+  //   itemRefs.current[id].classList.add('char__item_selected');
+  //   itemRefs.current[id].focus();
+  // }
+  
 
   
-  render() {
-    const { offset, newItemLoading ,charEnded} = this.state;
-    const content = this.state.loading ? <Spinner /> : <Element selectedId={this.state.selectedId} data={this.state.data} onCharSelected={this.props.onCharSelected}  focusOnItem={ this.focusOnItem}/>;
+ {
+    
+    const content = loading ? <Spinner /> : <Element selectedId={selectedId} data={data} onCharSelected={this.props.onCharSelected}  />;
     return (
       
       <div className="char__list">
@@ -71,7 +69,7 @@ class CharList extends Component{
    
 }
 
-const Element = ({selectedId, data, onCharSelected,focusOnItem}) => {
+const Element = ({selectedId, data, onCharSelected}) => {
   
   const elements = data.map((item) => {
     const active = (item.id === selectedId);
@@ -81,7 +79,6 @@ const Element = ({selectedId, data, onCharSelected,focusOnItem}) => {
         key={item.id}
         {...item}
         ourClass={ourClass}
-        focusOnItem={()=>focusOnItem(item.id)}
         onCharSelected={()=>onCharSelected(item.id)}
       />
     )
@@ -95,7 +92,7 @@ const Element = ({selectedId, data, onCharSelected,focusOnItem}) => {
 }
 
 const ElementItem=(props)=>{
-  const { name, thumbnail, onCharSelected,focusOnItem,ourClass} = props;
+  const { name, thumbnail, onCharSelected,ourClass} = props;
   let CharImg = "char__item__img" ;
   if (thumbnail==="http://i.annihil.us/u/prod/marvel/i/mg/b/40/image_not_available.jpg") CharImg="char__item__no__img"
   
@@ -103,7 +100,6 @@ const ElementItem=(props)=>{
     <li   tabIndex={0}
           onClick={() => {
             onCharSelected();
-            focusOnItem();
           }}
           className={ourClass}>
           <img className={CharImg} src={thumbnail} alt="abyss"/>

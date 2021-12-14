@@ -2,37 +2,34 @@ import AppHeader from "../appHeader/AppHeader";
 import RandomChar from "../randomChar/RandomChar";
 import CharList from "../charList/CharList";
 import CharInfo from "../charInfo/CharInfo";
-import { Component } from "react";
+import { useState} from "react";
 import decoration from '../../resources/img/vision.png';
 import ErrorBoundary from "../errorBoundary/ErrorBoundary";
 
+const App =()=>{
 
+    const [selectedChar,setChar]=useState(null);
 
-class App extends Component {
-    state={
-        selectedChar:null
+    
+    const onCharSelected=(id)=>{
+        setChar(id);
     }
-    onCharSelected=(id)=>{
-        this.setState({
-            selectedChar:id
-        })
-    }
-    render(){
+    
         return (
             <div className="app">
                 <AppHeader/>
             <main>
               <ErrorBoundary>
-                <RandomChar onCharSelected={this.onCharSelected} />
+                <RandomChar onCharSelected={onCharSelected} />
               </ErrorBoundary>
                    
               <div className="char__content">
                 <ErrorBoundary>
-                  <CharList onCharSelected={this.onCharSelected} />
+                  <CharList onCharSelected={onCharSelected} />
                 </ErrorBoundary>
                 
                 <ErrorBoundary>
-                  <CharInfo charId={this.state.selectedChar}/>
+                  <CharInfo charId={selectedChar}/>
                 </ErrorBoundary>
                        
                     </div>
@@ -42,7 +39,7 @@ class App extends Component {
         )
     }
    
-}
+
 
 
 export default App;
