@@ -1,5 +1,5 @@
 import './charList.scss';
-import {useState,useEffect,useRef} from 'react'
+import {useState,useEffect} from 'react'
 import MarvelServices from '../../services/MarvelServices';
 import Spinner from '../spinner/Spinner';
 import PropTypes from 'prop-types';
@@ -8,16 +8,17 @@ const CharList =(props)=>{
   const [data,setData]=useState([]);
   const [loading,setLoading]=useState(true);
   const [newItemLoading,setNewItemLoading]=useState(false);
-  const [offset,setOffset]=useState(210);
+  const [offset,setOffset]=useState(211);
   const [charEnded,setCharEnded]=useState(false);
-  const [selectedId,setSelectedId]=useState(0);
+  const [selectedId,setId]=useState(-1);
+  
 
   
   const marvelService = new MarvelServices();
 
   useEffect(()=>{
     onRequest();
-    },[])//выполниться 1 раз тоько при создании 
+    },[])//выполниться 1 раз только при создании 
 
   
   const onRequest = (offset) => {
@@ -41,26 +42,20 @@ const CharList =(props)=>{
     setCharEnded(charEnded=>ended);
     
   }
-  
-  // const itemRefs=useRef([]);
-
-  // const focusOnItem = (Clickid) => {
-    
-  //   itemRefs.current.forEach(item=>item.classList.remove('char__item_selected');
-  //   itemRefs.current[id].classList.add('char__item_selected');
-  //   itemRefs.current[id].focus();
-  // }
+  const focusOnItem=(id)=>{
+    setId(selectedId=>id);
+  }
   
 
   
  {
     
-    const content = loading ? <Spinner /> : <Element selectedId={selectedId} data={data} onCharSelected={this.props.onCharSelected}  />;
+    const content = loading ? <Spinner /> : <Element selectedId={selectedId}  data={data} onCharSelected={props.onCharSelected} focusOnItem={focusOnItem}  />;
     return (
       
       <div className="char__list">
         {content}    
-        <button onClick={() => this.onRequest(offset)} disabled={newItemLoading} style={{ 'display':charEnded?'none':'block'}} className="button button__main button__long">
+        <button onClick={() => onRequest(offset)} disabled={newItemLoading} style={{ 'display':charEnded?'none':'block'}} className="button button__main button__long">
               <div className="inner">load more</div>
           </button>
       </div>
@@ -69,7 +64,7 @@ const CharList =(props)=>{
    
 }
 
-const Element = ({selectedId, data, onCharSelected}) => {
+const Element = ({ data, onCharSelected,selectedId,focusOnItem}) => {
   
   const elements = data.map((item) => {
     const active = (item.id === selectedId);
@@ -79,7 +74,9 @@ const Element = ({selectedId, data, onCharSelected}) => {
         key={item.id}
         {...item}
         ourClass={ourClass}
+        focusOnItem={()=>focusOnItem(item.id)}
         onCharSelected={()=>onCharSelected(item.id)}
+        
       />
     )
       
@@ -92,14 +89,16 @@ const Element = ({selectedId, data, onCharSelected}) => {
 }
 
 const ElementItem=(props)=>{
-  const { name, thumbnail, onCharSelected,ourClass} = props;
+  const { name, thumbnail, onCharSelected,focusOnItem,ourClass} = props;
   let CharImg = "char__item__img" ;
   if (thumbnail==="http://i.annihil.us/u/prod/marvel/i/mg/b/40/image_not_available.jpg") CharImg="char__item__no__img"
   
   return(
     <li   tabIndex={0}
+          
           onClick={() => {
             onCharSelected();
+            focusOnItem();
           }}
           className={ourClass}>
           <img className={CharImg} src={thumbnail} alt="abyss"/>
