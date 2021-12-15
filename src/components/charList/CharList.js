@@ -16,7 +16,8 @@ const CharList =(props)=>{
   
   const marvelService = new MarvelServices();
 
-  useEffect(()=>{
+  useEffect(() => {
+    console.log('Here2');
     onRequest();
     },[])//выполниться 1 раз только при создании 
 
