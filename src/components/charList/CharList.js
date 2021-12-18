@@ -1,48 +1,50 @@
 import './charList.scss';
 import {useState,useEffect} from 'react'
-import MarvelServices from '../../services/MarvelServices';
+import useMarvelServices from '../../services/MarvelServices';
 import Spinner from '../spinner/Spinner';
 import PropTypes from 'prop-types';
 
 const CharList =(props)=>{
   const [data,setData]=useState([]);
-  const [loading,setLoading]=useState(true);
   const [newItemLoading,setNewItemLoading]=useState(false);
   const [offset,setOffset]=useState(211);
   const [charEnded,setCharEnded]=useState(false);
   const [selectedId,setId]=useState(-1);
+  const [firstUpd,setFirstUpd]=useState(true)
+  
   
 
   
-  const marvelService = new MarvelServices();
+  const {loading,getAllCharacters}=useMarvelServices();
 
   useEffect(() => {
-    console.log('Here2');
-    onRequest();
+    onRequest(offset);
+    
     },[])//выполниться 1 раз только при создании 
 
   
   const onRequest = (offset) => {
-    onCharListLoading();
-    marvelService.getAllCharacters(offset).then(onCharsLoaded)
+   
+     setNewItemLoading(newItemLoading=> false);
+    getAllCharacters(offset).then(onCharsLoaded)
+  
   }
 
-  const onCharListLoading = () => {
-    setNewItemLoading(true);
-  }
 
  const onCharsLoaded = (Chars) => {
+
     let ended = false;
     if (Chars.length < 9) {
       ended = true;
     }
     setData(data=>[...data,...Chars]);
-    setLoading(loading=>false);
     setNewItemLoading(newItemLoading=>false);
     setOffset(offset=>offset+9);
+    setFirstUpd(false);
     setCharEnded(charEnded=>ended);
     
   }
+
   const focusOnItem=(id)=>{
     setId(selectedId=>id);
   }
@@ -50,8 +52,7 @@ const CharList =(props)=>{
 
   
  {
-    
-    const content = loading ? <Spinner /> : <Element selectedId={selectedId}  data={data} onCharSelected={props.onCharSelected} focusOnItem={focusOnItem}  />;
+    const content = loading && firstUpd ? <Spinner /> : <Element selectedId={selectedId}  data={data} onCharSelected={props.onCharSelected} focusOnItem={focusOnItem}  />;
     return (
       
       <div className="char__list">

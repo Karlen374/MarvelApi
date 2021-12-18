@@ -5,6 +5,7 @@ import CharInfo from "../charInfo/CharInfo";
 import { useState} from "react";
 import decoration from '../../resources/img/vision.png';
 import ErrorBoundary from "../errorBoundary/ErrorBoundary";
+import ForTest from "../forTest/forTest";
 
 const App =()=>{
 
@@ -17,6 +18,7 @@ const App =()=>{
     
         return (
             <div className="app">
+              {/* <ForTest/> */}
                 <AppHeader/>
             <main>
               <ErrorBoundary>
@@ -30,7 +32,7 @@ const App =()=>{
                 
                 <ErrorBoundary>
                   <CharInfo charId={selectedChar}/>
-                </ErrorBoundary>
+                </ErrorBoundary> 
                        
                     </div>
                     <img className="bg-decoration" src={decoration} alt="vision"/>

@@ -1,56 +1,36 @@
 import { useState,useEffect } from 'react';
 import './randomChar.scss';
 import Spinner from '../spinner/Spinner'
-import MarvelServices from '../../services/MarvelServices';
+import useMarvelServices from '../../services/MarvelServices';
 import mjolnir from '../../resources/img/mjolnir.png';
 import ErrorMessage from '../errorMessage/ErrorMessage';
 
 const RandomChar=(props)=>{
   const [char, setChar] = useState({});
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(false);
+  
  
-  const marvelService = new MarvelServices();
+  const {loading,error,getCharacter,clearError} =  useMarvelServices();
 
   useEffect(() => {
-    console.log('Here3');
+    
     updateChar();
   },[])
   
-  // componentWillUnmount() {
-  //   clearInterval(this.timerId)
-  // }
-  const onError = () => {
-    setError(true);
-    setLoading(false);
  
-  }
   const onCharLoaded = (char) => {
-    setLoading(false);
     setChar(char);
    // this.setState({ char,loading:false });//так как это вызывается как коллбек ниже то loading станет false как только данные загрузятся
   }
  
   const updateChar = () => {
+    clearError();//для того чтобы была возможность поменять персонажа после того выскачет ошибка
     const id = Math.floor(Math.random()*(1011400-1011000)+1011000);
-    marvelService
-      .getCharacter(id)//getCharacter возвращает нужный объект res и мы в then обновляем state
-      .then(onCharLoaded)//Аргумент который в then автоматически удет подставлятся в onCharLoaded
-      .catch(onError)//сработает только если произоша ошибка загрузки данных
-    console.log('here5');
+    getCharacter(id)//getCharacter возвращает нужный объект res и мы в then обновляем state
+              .then(onCharLoaded)//Аргумент который в then автоматически удет подставлятся в onCharLoaded
+              
+              
   }
-  const randomUpdateChar = () => {
-    setLoading(true);
-    setError(false);
-    console.log('here4')
-    const id = Math.floor(Math.random() * (1011400 - 1011000) + 1011000);
-    marvelService
-      .getCharacter(id)//getCharacter возвращает нужный объект res и мы в then обновляем state
-      .then(onCharLoaded)//Аргумент который в then автоматически удет подставлятся в onCharLoaded
-      .catch(randomUpdateChar)
-    
-  }
- 
+
    
     const errorMessage = error ? <ErrorMessage /> : null;
     const spinner = loading ? <Spinner /> : null;
@@ -69,7 +49,7 @@ const RandomChar=(props)=>{
                   Or choose another one
               </p>
               <button className="button button__main">
-                  <div onClick={randomUpdateChar} className="inner">try it</div>
+                  <div onClick={updateChar} className="inner">try it</div>
               </button>
               <img src={mjolnir} alt="mjolnir" className="randomchar__decoration"/>
           </div>

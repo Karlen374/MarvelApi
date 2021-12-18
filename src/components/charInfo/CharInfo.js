@@ -4,50 +4,37 @@ import PropTypes from 'prop-types'
 import Spinner from '../spinner/Spinner';
 import ErrorMessage from '../errorMessage/ErrorMessage';
 import Sceleton from '../skeleton/Skeleton'
-import MarvelServices from '../../services/MarvelServices';
+import useMarvelServices from '../../services/MarvelServices';
 
 const CharInfo =(props)=>{
   const [char, setChar] = useState(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(false);
+  
     
-    const   marvelService = new MarvelServices();
+   const {loading,error,getCharacter,clearError}= useMarvelServices();
 
   useEffect(() => {
     updateChar();
-    console.log('here1');
+   
   }, [props.charId])
   
   
-  const onError = () => {
-    setLoading(false);
-    setError(true);
-    console.log(props.charId)
-  }
-
   const onCharLoaded = (char) => {
-    setLoading(false);
     
     setChar(char);
         //this.setState({ char,loading:false });//так как это вызывается как коллбек ниже то loading станет false как только данные загрузятся
     
   }
-  const onCharLoading = () => {
-    setLoading(true);
-    setError(false);
-  }
+ 
   const  updateChar=()=>{
+    clearError();//для того чтобы была возможность поменять персонажа после того выскачет ошибка
     const { charId } = props;
     console.log(`CharId in Update=${charId}`)
           if(!charId){
               return;
           }
-      onCharLoading();
-
-         marvelService
-                .getCharacter(charId)
+          getCharacter(charId)
                 .then(onCharLoaded)
-                .catch(onError)
+                
         
       }
     
