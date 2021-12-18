@@ -6,6 +6,7 @@ import { useState} from "react";
 import decoration from '../../resources/img/vision.png';
 import ErrorBoundary from "../errorBoundary/ErrorBoundary";
 import ForTest from "../forTest/forTest";
+import ComicsList from "../comicsList/ComicsList";
 
 const App =()=>{
 
@@ -21,7 +22,8 @@ const App =()=>{
               {/* <ForTest/> */}
                 <AppHeader/>
             <main>
-              <ErrorBoundary>
+              <ComicsList/>
+              {/* <ErrorBoundary>
                 <RandomChar onCharSelected={onCharSelected} />
               </ErrorBoundary>
                    
@@ -34,7 +36,7 @@ const App =()=>{
                   <CharInfo charId={selectedChar}/>
                 </ErrorBoundary> 
                        
-                    </div>
+                    </div> */}
                     <img className="bg-decoration" src={decoration} alt="vision"/>
                 </main>
             </div>
