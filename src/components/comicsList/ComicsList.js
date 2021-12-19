@@ -7,7 +7,12 @@ import Spinner from '../spinner/Spinner';
 const ComicsList = () => {
     const [offset,setOffset]=useState(8);
     const [data,setData]=useState([]);
+    const [firstLoading,setFistLoading]=useState(false);
+    const [newItemLoading,setNewItemLoading]=useState(false);
+
+
     const {getAllComics,loading}=useMarvelServices();
+    
 
    useEffect(()=>{
        onRequest(offset);
@@ -16,19 +21,21 @@ const ComicsList = () => {
     const onRequest = (offset) => {
         
         getAllComics(offset).then(onComicsLoaded)
-        
+        console.log(getAllComics(offset));
      }
 
    const onComicsLoaded=(Comics)=>{
+       setFistLoading(true);
     setData(data=>[...data,...Comics]);
+    setNewItemLoading(newItemLoading=>false);
     setOffset(()=>offset+8);
    }
    {
-    const content=loading?<Spinner/>:<Comics data={data}/>
+    const content=loading && !firstLoading?<Spinner/>:<Comics data={data}/>
     return (
         <div className="comics__list">
            {content}
-            <button onClick={()=>onRequest(offset)} className="button button__main button__long">
+            <button onClick={()=>onRequest(offset)} disabled={newItemLoading} className="button button__main button__long">
                 <div className="inner">load more</div>
             </button>
         </div>
@@ -52,12 +59,13 @@ const Comics=({data})=>{
 }
 const ComicsItem=(props)=>{
     const {price,thumbnail,title}=props
+    const comicsPrice =price?price+'$': 'Not Aviable Yet';
     return(
         <li className="comics__item">
             <a href="#">
                 <img src={thumbnail} alt="ultimate war" className="comics__item-img"/>
                 <div className="comics__item-name">{title}</div>
-                <div className="comics__item-price">{price}$</div>
+                <div className="comics__item-price">{comicsPrice}</div>
             </a>
         </li>
     )

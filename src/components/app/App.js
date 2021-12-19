@@ -7,6 +7,7 @@ import decoration from '../../resources/img/vision.png';
 import ErrorBoundary from "../errorBoundary/ErrorBoundary";
 import ForTest from "../forTest/forTest";
 import ComicsList from "../comicsList/ComicsList";
+import SingleComic from "../singleComic/SingleComic";
 
 const App =()=>{
 
@@ -22,7 +23,8 @@ const App =()=>{
               {/* <ForTest/> */}
                 <AppHeader/>
             <main>
-              <ComicsList/>
+            
+              <SingleComic/>
               {/* <ErrorBoundary>
                 <RandomChar onCharSelected={onCharSelected} />
               </ErrorBoundary>

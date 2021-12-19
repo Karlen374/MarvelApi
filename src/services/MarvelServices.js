@@ -42,7 +42,7 @@ const  useMarvelServices=()=>{
         title: comics.title,
         description: comics.description || 'No data yet',
         thumbnail: comics.thumbnail.path + '.'+comics.thumbnail.extension,
-        prices: comics.prices.price || 'Not Avilable'
+        price: comics.prices.price 
       }
   }
 
