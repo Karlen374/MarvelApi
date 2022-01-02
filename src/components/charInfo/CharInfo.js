@@ -5,6 +5,7 @@ import Spinner from '../spinner/Spinner';
 import ErrorMessage from '../errorMessage/ErrorMessage';
 import Sceleton from '../skeleton/Skeleton'
 import useMarvelServices from '../../services/MarvelServices';
+import {Link} from 'react-router-dom';
 
 const CharInfo =(props)=>{
   const [char, setChar] = useState(null);
@@ -58,14 +59,16 @@ const CharInfo =(props)=>{
 
 const View=({char})=>{
     const {name,description,thumbnail,homepage,wiki,comics}=char;
+    console.log(comics);
     const content=comics.length ?  <>{
                     
         comics.slice(0,10).map((item,id)=>{
             return(
-        <li key={id} className="char__comics-item">
-            {item.name}
-        </li>
-   
+                <Link to={`/comics/${item.resourceURI.substr(item.resourceURI.indexOf("s/")+2)}`}>
+                    <li key={id} className="char__comics-item">
+                       {item.name}
+                    </li>
+                </Link>
             )
         })
     }</>: <div>Not Data Yet</div>
