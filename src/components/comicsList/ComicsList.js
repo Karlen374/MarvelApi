@@ -1,9 +1,12 @@
 import './comicsList.scss';
+import {Link} from 'react-router-dom';
 import uw from '../../resources/img/UW.png';
 import xMen from '../../resources/img/x-men.png';
 import useMarvelServices from '../../services/MarvelServices';
 import {useState,useEffect} from 'react';
 import Spinner from '../spinner/Spinner';
+
+
 const ComicsList = () => {
     const [offset,setOffset]=useState(8);
     const [data,setData]=useState([]);
@@ -11,9 +14,9 @@ const ComicsList = () => {
     const [newItemLoading,setNewItemLoading]=useState(false);
 
 
-    const {getAllComics,loading}=useMarvelServices();
+    const {getAllComics,loading,getComics}=useMarvelServices();
     
-
+    
    useEffect(()=>{
        onRequest(offset);
    },[])
@@ -31,7 +34,7 @@ const ComicsList = () => {
     setOffset(()=>offset+8);
    }
    {
-    const content=loading && !firstLoading?<Spinner/>:<Comics data={data}/>
+    const content=loading && !firstLoading?<Spinner/>:<Comics data={data} />
     return (
         <div className="comics__list">
            {content}
@@ -44,11 +47,12 @@ const ComicsList = () => {
     
 }
 const Comics=({data})=>{
-    const Elements=data.map((item)=>{
+    const Elements=data.map((item,id)=>{
         return(
         <ComicsItem
-        key={item.id}
+        key={id}
         {...item}
+        
         />)
     })
     return(
@@ -58,15 +62,16 @@ const Comics=({data})=>{
     )
 }
 const ComicsItem=(props)=>{
-    const {price,thumbnail,title}=props
+    const {id,price,thumbnail,title}=props
     const comicsPrice =price?price+'$': 'Not Aviable Yet';
+    
     return(
-        <li className="comics__item">
-            <a href="#">
+        <li className="comics__item" >
+            <Link to={`/comics/${id}`}>
                 <img src={thumbnail} alt="ultimate war" className="comics__item-img"/>
                 <div className="comics__item-name">{title}</div>
                 <div className="comics__item-price">{comicsPrice}</div>
-            </a>
+            </Link>
         </li>
     )
 }
